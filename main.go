@@ -16,6 +16,7 @@ func main() {
 	in := bufio.NewReader(os.Stdin)
 
 	for {
+		fmt.Println("Policz se co:")
 		eq := ""
 		eq, err := in.ReadString('\n')
 		if err != nil {
@@ -23,7 +24,11 @@ func main() {
 			os.Exit(1)
 		}
 
-		if eq == "exit\n" {
+		if eq == "exit\n" || eq == "exit\r\n" {
+			os.Exit(0)
+		}
+
+		if eq == "q\n" || eq == "q\r\n" {
 			os.Exit(0)
 		}
 
@@ -38,7 +43,7 @@ func main() {
 			fmt.Println(k)
 		}
 
-		calculate(eq_parsed)
+		fmt.Println(calculate(eq_parsed))
 
 	}
 }
@@ -49,13 +54,25 @@ func main() {
 // * =42
 // / = 47
 
-func parser(eq string) ([]string, error) {
+func RemoveWhiteSpaces(s string) (string, error) {
+
+	s = strings.ReplaceAll(s, " ", "")
+	s = strings.ReplaceAll(s, "\n", "")
+	s = strings.ReplaceAll(s, "\r", "")
+	fmt.Println("Parsed: ", s)
+
+	return s, nil
+}
+
+func parser(s string) ([]string, error) {
 
 	var result []string
 
-	eq = strings.Replace(eq, " ", "", -1)
-	eq = strings.Replace(eq, "\n", "", -1)
-	fmt.Println("Parsed: ", eq)
+	eq, err := RemoveWhiteSpaces(s)
+
+	if err != nil {
+		return nil, errors.New("error while removing whitespaces sir")
+	}
 
 	if eq[0] < 48 || eq[0] > 57 {
 		fmt.Println("Equation has to start with a number")
@@ -63,12 +80,11 @@ func parser(eq string) ([]string, error) {
 	}
 
 	if eq[len(eq)-1] < 48 || eq[len(eq)-1] > 57 {
-		fmt.Println("Equation has to end with a number")
+		fmt.Println("Equation has to end with a number. Yours ended with:", eq[len(eq)-1])
 		return nil, errors.New("has to end with  a number")
 	}
 
 	k := ""
-	//var op string
 	for _, ch := range eq {
 
 		if ch >= 48 && ch <= 57 {
@@ -92,12 +108,13 @@ func parser(eq string) ([]string, error) {
 
 func calculate(eq []string) (float64, error) {
 
-	result := 0.0
+	//TODO: add support for more than two factors to be calculated without checking
 
 	for i, k := range eq {
 
-		if k == "+" {
-			// result = float64(i-1) + float64(eq[i+1]) //seems you can't convert strting to a float that easly
+		switch k {
+
+		case "+":
 			a, err := strconv.ParseFloat(eq[i-1], 64)
 			if err != nil {
 
@@ -110,9 +127,9 @@ func calculate(eq []string) (float64, error) {
 				fmt.Println("Error converting string to number")
 			}
 
-			result = a + b
-		} else if k == "-" {
-			// result = float64(i-1) + float64(eq[i+1]) //seems you can't convert strting to a float that easly
+			return a + b, nil
+
+		case "-":
 			a, err := strconv.ParseFloat(eq[i-1], 64)
 			if err != nil {
 
@@ -125,9 +142,9 @@ func calculate(eq []string) (float64, error) {
 				fmt.Println("Error converting string to number")
 			}
 
-			result = a - b
-		} else if k == "*" {
-			// result = float64(i-1) + float64(eq[i+1]) //seems you can't convert strting to a float that easly
+			return a - b, nil
+
+		case "*":
 			a, err := strconv.ParseFloat(eq[i-1], 64)
 			if err != nil {
 
@@ -140,9 +157,9 @@ func calculate(eq []string) (float64, error) {
 				fmt.Println("Error converting string to number")
 			}
 
-			result = a * b
-		} else if k == "/" {
-			// result = float64(i-1) + float64(eq[i+1]) //seems you can't convert strting to a float that easly
+			return a * b, nil
+
+		case "/":
 			a, err := strconv.ParseFloat(eq[i-1], 64)
 			if err != nil {
 
@@ -155,11 +172,23 @@ func calculate(eq []string) (float64, error) {
 				fmt.Println("Error converting string to number")
 			}
 
-			result = a / b
+			return a / b, nil
+
 		}
-
 	}
-
-	fmt.Println("Result: ", result)
-	return result, nil
+	return 0.0, errors.New("function 'calculate' returned in a way it shouldn't (i think)")
 }
+
+func DetermineOperationsOrder([]string) ([]string, error) {
+
+	//TODO write a function here that will sort the equation string into substring that are in the right order and can be calculated
+
+	return nil, nil
+}
+
+// func printRunes(s string) {
+// 	for _, l := range s {
+// 		fmt.Print(l, " ")
+// 	}
+
+// }
