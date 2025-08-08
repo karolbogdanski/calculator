@@ -74,13 +74,18 @@ func parser(s string) ([]string, error) {
 		return nil, errors.New("error while removing whitespaces sir")
 	}
 
+	if len(eq) < 2 {
+
+		return nil, errors.New("not enough arguments")
+	}
+
 	if eq[0] < 48 || eq[0] > 57 {
 		fmt.Println("Equation has to start with a number")
 		return nil, errors.New("has to start with  a number")
 	}
 
 	if eq[len(eq)-1] < 48 || eq[len(eq)-1] > 57 {
-		fmt.Println("Equation has to end with a number. Yours ended with:", eq[len(eq)-1])
+		fmt.Println("Equation has to end with a number. Yours ended with:", string(eq[len(eq)-1]))
 		return nil, errors.New("has to end with  a number")
 	}
 
@@ -109,6 +114,17 @@ func parser(s string) ([]string, error) {
 func calculate(eq []string) (float64, error) {
 
 	//TODO: add support for more than two factors to be calculated without checking
+	if eq == nil {
+
+		return -1, errors.New("empty input")
+	}
+
+	if len(eq) < 3 {
+
+		return -1, errors.New("not enough arguments")
+	}
+
+	fmt.Println("len= ", len(eq))
 
 	for i, k := range eq {
 
