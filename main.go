@@ -38,10 +38,10 @@ func main() {
 			os.Exit(1)
 		}
 
-		for _, k := range eq_parsed {
+		// for _, k := range eq_parsed {
 
-			fmt.Println(k)
-		}
+		// 	fmt.Println(k)
+		// }
 
 		fmt.Println(calculate(eq_parsed))
 
